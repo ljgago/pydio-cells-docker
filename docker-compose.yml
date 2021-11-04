@@ -1,0 +1,53 @@
+version: '3.7'
+services:
+  cells:
+    image: pydio/cells:latest
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - "db"
+    environment:
+      # Internal Web Server Configuration
+      CELLS_BIND: ${PUBLIC_FQDN}:443
+      CELLS_EXTERNAL: https://${PUBLIC_FQDN}
+      CELLS_LE_AGREE: 1
+      CELLS_LE_EMAIL: ${ADMIN_EMAIL}
+      CELLS_LOG_LEVEL: production
+      # Directly pass server configuration as yaml file
+      # CELLS_INSTALL_YAML: /pydio/config/install.yml
+      # Pass env var to yaml install conf
+      # CELLS_ADMIN_PWD: ${CELLS_ADMIN_PWD}
+      # MYSQL_PYDIO_PWD: ${MYSQL_PYDIO_PWD}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${STORE_PATH}/fileserver/cells:/var/cells
+      # - ./install-conf.yml:/pydio/config/install.yml:ro
+
+  db:
+    image: mariadb:10.5
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PWD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PYDIO_PWD}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${STORE_PATH}/fileserver/db:/var/lib/mysql
+    command: [mysqld, --character-set-server=utf8mb4, --collation-server=utf8mb4_unicode_ci]
+
+  db-backup:
+    build: ./periodic-backup
+    restart: always
+    depends_on:
+      - "db"
+    environment:
+      MYSQL_CONTAINER_NAME: db
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PWD}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${STORE_PATH}/fileserver/db-backup:/opt/mysql/backup
+    command: crond -f -d 8
