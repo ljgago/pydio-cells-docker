@@ -24,6 +24,7 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - ${STORE_PATH}/fileserver/cells:/var/cells
       # - ./install-conf.yml:/pydio/config/install.yml:ro
+    # command: cells start -x pydio.grpc.data.sync
 
   db:
     image: mariadb:10.5
@@ -39,7 +40,10 @@ services:
     command: [mysqld, --character-set-server=utf8mb4, --collation-server=utf8mb4_unicode_ci]
 
   db-backup:
-    build: ./periodic-backup
+    build:
+      context: ./periodic-backup
+      args:
+        MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PWD}
     restart: always
     depends_on:
       - "db"
