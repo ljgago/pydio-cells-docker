@@ -1,7 +1,7 @@
 version: '3.7'
 services:
   cells:
-    image: pydio/cells:3.0.1
+    image: pydio/cells:3.0.3
     restart: always
     ports:
       - "80:80"
