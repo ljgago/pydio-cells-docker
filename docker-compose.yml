@@ -22,7 +22,7 @@ services:
       # MYSQL_PYDIO_PWD: ${MYSQL_PYDIO_PWD}
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - ${STORE_PATH}/fileserver/cells:/var/cells
+      - ${STORAGE_PATH}/cells:/var/cells
       # - ./install-conf.yml:/pydio/config/install.yml:ro
     # command: cells start -x pydio.grpc.data.sync
 
@@ -36,7 +36,7 @@ services:
       MYSQL_PASSWORD: ${MYSQL_PYDIO_PWD}
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - ${STORE_PATH}/fileserver/db:/var/lib/mysql
+      - ${STORAGE_PATH}/db:/var/lib/mysql
     command: [mysqld, --character-set-server=utf8mb4, --collation-server=utf8mb4_unicode_ci]
 
   db-backup:
@@ -53,5 +53,5 @@ services:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PWD}
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - ${STORE_PATH}/fileserver/db-backup:/opt/mysql/backup
+      - ${STORAGE_PATH}/db-backup:/opt/mysql/backup
     command: crond -f -d 8
