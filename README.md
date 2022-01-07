@@ -10,7 +10,7 @@ You need create a `.env` file with se follow content:
     ADMIN_EMAIL=example@gmail.com
     CELLS_ADMIN_PWD=admin
 
-    STORE_PATH=/home/myuser
+    STORAGE_PATH=/home/myuser/store
 
     MYSQL_USER=pydio
     MYSQL_DATABASE=cells
